@@ -1,1 +1,128 @@
 V2.07
+
+
+MÔ TẢ
+Xây  dựng  ứng  dụng  Web  dùng  Spring  Framework/JSP/Thymeleaf  kết  hợp  v ới  SQL 
+Server/MariaDB.  Xây dựng  Website Quản  lý  Ngân  hàng. 
+Website thực hiện các chức năng  cơ bản như:
+-  Thống  kê  số  lượng  bàn  theo  từng  trạng  thái   (Available,  Occupied,  Cleaning, 
+Reserved…)
+-  Xem danh  sách  bàn  ăn theo trạng thái
+-  Thêm  mới  Reservation (Đặt bàn)  →  Kiểm tra để  không được đặt trùng bàn  cùng thời 
+đi ểm
+-  Xóa  Reservation  →  Chỉ  được  phép  xóa  nếu  thời  gian  đặt  bàn  chưa  di ễn  ra
+(reservation_time > NOW())
+1.  Cơ  sở dữ  liệu được mô tả  như sau:
+Hệ  th ống quản  lý thông tin  nhà  hàng:
+-  Mỗi bàn  ăn  có một trạng thái (Available  / Reserved / Occupied / Cleaning)
+-  Mỗi trạng thái bàn  có nhiều bàn  ăn (1–N)
+-  Một khách  hàng  có thể đặt nhiều bàn
+-  Một bàn  ăn  có thể xuất  hiện trong nhiều reservation khác nhau  (theo thời gian)
+a.  Table  table_status
+STT  Tên column  Kiểu Dữ Liệu  Ràng buộc  Mô tả
+1  id  BIGINT (PK, AI)  Khóa chính,  tự tăng  Mã trạng  thái  bàn
+2  status_name  VARCHAR(50)
+NOT NULL, 
+UNIQUE
+Tên trạng  thái  bàn (Available, 
+Reserved,  etc.)
+KIỂM TRA THƯỜNG KỲ
+Môn:  LẬ P TRÌNH  WWW  JAVA
+Lớp/Lớp  học phần:  DHKTPM18A
+Ngày  KT :  ……/11/2025
+Thời gian làm bài: 120 phút
+(Không kể thời gian phát đề) 
+2 
+b.   Table  restaurant_tables
+STT  Tên column  Kiểu Dữ Liệu  Ràng buộc  Mô tả
+1  id  BIGINT (PK, AI)  Khóa chính,  tự tăng  Mã bàn
+2  table_number  VARCHAR(10)
+NOT NULL, 
+UNIQUE
+Số bàn (VD:  T01, B12)
+3  capacity   INT   NOT NULL  Sức chứa của bàn
+4  status_id  BIGINT (FK)  NOT NULL  Trạng  thái  bàn (status.id)
+c.  Table  customers
+STT  Tên  column   Kiểu Dữ Liệu  Ràng buộc  Mô tả
+1  id  BIGINT (PK, AI)  Khóa chính,  tự tăng  Mã khách
+2  full_name  VARCHAR(100)  NOT NULL  Tên khách hàng
+3  email   VARCHAR(100)
+NOT NULL, 
+UNIQUE
+Email  khách hàng
+4  phone  VARCHAR(15)
+NOT NULL, 
+UNIQUE
+Điện  thoại
+d.   Table  reservations
+STT  Tên column  Kiểu Dữ Liệu  Ràng buộc  Mô tả
+1  id  BIGINT (PK, AI)  Khóa chính,  tự tăng  Mã đặt bàn (duy nhất)
+2  reservation_no  VARCHAR(20)
+NOT NULL, 
+UNIQUE
+Mã số đặt bàn (VD:  RES001, RES002)
+3  reservation_date
+DATETIME  / 
+TIMESTAMP
+NOT NULL  Thời  điểm  đặt bàn
+4  notes  VARCHAR(255)  NULL  Ghi  chú từ khách hàng
+5  customer_id  BIGINT (FK)  NOT NULL  Người đặt bàn (customers.id)
+2.  Script.sql được cung cấp trước khi làm bài.
+3.  T ạo thư mục trên T:\  SMSoMay_HoTen_MSSV
+Tạo Web Project có tên SMSoMay_HoTen_MSSV  trong thư mục v ừa  tạo.
+(VD: SM09_NGUYENVANA_01120036)
+4.  Layout Website minh họa như sau:
+SoMay-HotenSV- MSSV
+Đặt  bàn (Reservation)
+THỐNG  KÊ  BÀN ĂN  THEO  TRẠ NG  THÁI
+3
+Yêu cầu  Đi ểm
+1  Đúng  cấu trúc project (như đã hướng  dẫn)  1.0 
+Minh chứng:
+2  T ạo đúng tên database  và  dữ  liệu yêu cầu  1.0 
+3  T ạo entities  1.0 
+4  T ạo repositories, services, services.impl
+- Thống  kê số lượng bàn  theo từng trạng thái
+- Xem danh  sách bàn  ăn theo trạng thái
+- Thêm  mới Reservation (Đặt bàn)
+- Xóa Reservation
+0.5
+0.5
+0.5
+0.5
+5  Hiển thị  Thống  kê số lượng  bàn theo từng trạng thái  1.0 
+Minh chứng:
+6  Xem danh  sách Bàn  ăn theo trạng thái  0.5 
+Minh chứng:
+7  Đặt bàn
+Thực  hiện kiểm tra trước khi lưu vào  CSDL:
+  Các trường bắt buộc nhập:  reservation_no   ,  customer_id, table_id, 
+reservation_date
+  reservation_no : 
+-  T ối đa  12 ký tự
+-  Phải bắt đ ầu bằng  3 chữ  cái và theo sau là  7–12  số (VD:  RES001)
+-  Không  được phép trùng
+  reservation_date :  phải lớn hơn ngày  hiện tại
+  Kiểm tra không được đặt trùng bàn cùng thời đi ểm
+  Thiếu  1 validate  -0.5đ
+  View  + Lưu thành  công và redirect v ề  DS  thống kê
+1.5
+1.0
+Minh chứng:  Hiển thị  lỗi
+Minh chứng:  Kiểm tra không được đặt trùng bàn cùng thời đi ểm
+Minh chứng:  lưu thành  công và  tr ở v ề  DS Thống  kê
+8  Xóa Reservation
+  Chỉ  được phép xóa nếu  thời gian đặt  bàn chưa di ễn ra  (reservation_ date  > 
+NOW()), ngược lại hiển thị   “Không  được xoá  Reservation  này”
+  Xóa thành  công
+0.5
+0.5
+Minh chứng:  Hiển thị  thông báo
+Minh chứng:  Xoá thành  công
+9  Điểm trừ
+  Layout: không  có SoMay-HotenSV-MSSV
+  Đúng  cấu trúc nhưng  tạo sai v ị  trí Class và Interface
+  Chương  trình chạy ít nhất 1 chức năng  có UI, nếu không có chỉ  chấm code
+-2.0
+-2.0
+-4.0
